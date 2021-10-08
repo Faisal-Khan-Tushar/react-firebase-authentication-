@@ -1,5 +1,5 @@
 import './App.css';
-import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,sendPasswordResetEmail   } from "firebase/auth";
 import initializeAuthentication from './Firebase/firebase.init';
 import { useState } from 'react';
 
@@ -72,11 +72,26 @@ signInWithEmailAndPassword(auth,email,password)
    console.log(user);
    //ar jodi error na pay taile amra error take empty string kore dibo. Mane hocche je kono error nai.
    setError('');
+   //user register korar pore amra varify korbo email take. Er age toh korte parbo na she jodi register e nai ba chape.
+   verifyEmail();
  })
  //email create korte giye jodi firebase theke amra kono erro khai tahole eita catch korbe shei error take.
  .catch(error=>{
    //error.massage name firebase e ekta error ache amra oita e dekhabo arki eita boltesi.
    setError(error.message);
+ })
+  }
+  const verifyEmail=()=>{
+    sendEmailVerification(auth.currentUser)
+    .then(result=>{
+      console.log(result);
+    })
+  }
+  //doc dekhe e kortesi shob
+  const handleResetPassword=()=>{
+ sendPasswordResetEmail(auth,email)
+ .then(result=>{
+
  })
   }
   return (
@@ -111,6 +126,8 @@ signInWithEmailAndPassword(auth,email,password)
 {error}
   </div>
   <button type="submit" className="btn btn-primary">{isLogin? 'Log in':'Register'}</button>
+  <button onClick={handleResetPassword} type="button" className="btn btn-secondary btn-sm">Reset Password</button>
+
 </form>
  <br /><br /><br />
       <div>------------------------------------</div>
