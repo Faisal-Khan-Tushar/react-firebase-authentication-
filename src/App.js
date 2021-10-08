@@ -1,5 +1,5 @@
 import './App.css';
-import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,sendPasswordResetEmail   } from "firebase/auth";
+import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendEmailVerification,sendPasswordResetEmail,updateProfile    } from "firebase/auth";
 import initializeAuthentication from './Firebase/firebase.init';
 import { useState } from 'react';
 
@@ -8,6 +8,7 @@ const googleProvider = new GoogleAuthProvider();
 
 function App() {
   //user er email ta change hoite pare email toh ekta string tai er default value hocche empty string.Same password er jonno o.
+  const [name,setName]=useState("");
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [error,setError]=useState("");
@@ -64,6 +65,13 @@ signInWithEmailAndPassword(auth,email,password)
   const toggleLogin=e=>{
     setIsLogin(e.target.checked);
   }
+  const setUserName=()=>{
+ updateProfile(auth.currentUser,{displayName:name }
+ .then(result=>{
+   
+ })
+  )
+  }
   const registerNewUser =(email,password)=>{
     //handleResiteration er vitore createuserWithEmailAndPassword use korlam karon hocche register e click korlei kebol amra ekjon user ke create korbo. Otherwise toh korar kono karon nai.
  createUserWithEmailAndPassword(auth,email,password)
@@ -74,6 +82,7 @@ signInWithEmailAndPassword(auth,email,password)
    setError('');
    //user register korar pore amra varify korbo email take. Er age toh korte parbo na she jodi register e nai ba chape.
    verifyEmail();
+   setUserName();
  })
  //email create korte giye jodi firebase theke amra kono erro khai tahole eita catch korbe shei error take.
  .catch(error=>{
@@ -94,11 +103,20 @@ signInWithEmailAndPassword(auth,email,password)
 
  })
   }
+  const handleNameChange=e=>{
+    setName(e.target.value);
+  }
   return (
     <div className="mx-5">
 {/* submit type er input thakle amra form er moddhe ekta event handler add korte pari sheta hocche onSubmit={} jeta kina submit button e click korle kichu ekta je ghotbe oita control korbe */}
 <form onSubmit={handleRegistration}>
   <h3 className="text-primary">Please {isLogin? ' log in' : 'Register'}</h3>
+ { !isLogin && <div className="row mb-3">
+    <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Name</label>
+    <div className="col-sm-10">
+      <input onBlur={handleNameChange} type="email" className="form-control" id="inputName" required/>
+    </div>
+  </div>}
   <div className="row mb-3">
     <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
     <div className="col-sm-10">
