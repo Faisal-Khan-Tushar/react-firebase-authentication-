@@ -1,5 +1,5 @@
 import './App.css';
-import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword} from "firebase/auth";
+import { getAuth, signInWithPopup,GoogleAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import initializeAuthentication from './Firebase/firebase.init';
 import { useState } from 'react';
 
@@ -11,6 +11,8 @@ function App() {
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [error,setError]=useState("");
+  //karon by default ami toh ar login korbo na ba check box tate tick dewa thakbe na. Check box tate tik dewa na thakar mane hocche oita false .
+  const [isLogin,setIsLogin]=useState(false);
   const auth = getAuth();
   const handleGoogleSignIn=()=>{
     //ekhane boshalam karon ami jani amar button ta click korle amader authentication er kache jabe.
@@ -33,7 +35,37 @@ function App() {
   setError('Password Must contain 2 upper case letter')
   return;
  }
- //handleResiteration er vitore createuserWithEmailAndPassword use korlam karon hocche register e click korlei kebol amra ekjon user ke create korbo. Otherwise toh korar kono karon nai.
+ if(isLogin){
+   processLogin(email,password);
+ }
+ else{
+   registerNewUser(email,password);
+ }
+
+
+  }
+  const processLogin=(email,password)=>{
+signInWithEmailAndPassword(auth,email,password)
+.then(result=>{
+  const user=result.user;
+  console.log(user);
+  setError('');
+})
+.catch(error=>{
+  setError(error.message)
+})
+  }
+  const handleEmailChange=e=>{
+  setEmail(e.target.value)
+  }
+  const handlePasswordChange=e=>{
+    setPassword(e.target.value);
+  }
+  const toggleLogin=e=>{
+    setIsLogin(e.target.checked);
+  }
+  const registerNewUser =(email,password)=>{
+    //handleResiteration er vitore createuserWithEmailAndPassword use korlam karon hocche register e click korlei kebol amra ekjon user ke create korbo. Otherwise toh korar kono karon nai.
  createUserWithEmailAndPassword(auth,email,password)
  .then(result=>{
    const user=result.user;
@@ -46,19 +78,12 @@ function App() {
    //error.massage name firebase e ekta error ache amra oita e dekhabo arki eita boltesi.
    setError(error.message);
  })
-
-  }
-  const handleEmailChange=e=>{
-  setEmail(e.target.value)
-  }
-  const handlePasswordChange=e=>{
-    setPassword(e.target.value);
   }
   return (
     <div className="mx-5">
 {/* submit type er input thakle amra form er moddhe ekta event handler add korte pari sheta hocche onSubmit={} jeta kina submit button e click korle kichu ekta je ghotbe oita control korbe */}
 <form onSubmit={handleRegistration}>
-  <h3 className="text-primary">Please Register</h3>
+  <h3 className="text-primary">Please {isLogin? ' log in' : 'Register'}</h3>
   <div className="row mb-3">
     <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
     <div className="col-sm-10">
@@ -75,9 +100,9 @@ function App() {
   <div className="row mb-3">
     <div className="col-sm-10 offset-sm-2">
       <div className="form-check">
-        <input className="form-check-input" type="checkbox" id="gridCheck1"/>
+        <input onChange={toggleLogin} className="form-check-input" type="checkbox" id="gridCheck1"/>
         <label className="form-check-label" htmlFor="gridCheck1">
-          Example checkbox
+          Already Registered?
         </label>
       </div>
     </div>
@@ -85,7 +110,7 @@ function App() {
   <div className="row mb-3 text-danger">
 {error}
   </div>
-  <button type="submit" className="btn btn-primary">Register</button>
+  <button type="submit" className="btn btn-primary">{isLogin? 'Log in':'Register'}</button>
 </form>
  <br /><br /><br />
       <div>------------------------------------</div>
